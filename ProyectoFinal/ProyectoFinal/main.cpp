@@ -38,7 +38,7 @@ struct cube{
 struct sphere{
     float colorR;
     float colorG;
-    float clortB;
+    float colorB;
     float positionX;
     float positionY;
     float positionZ;
@@ -48,7 +48,7 @@ struct sphere{
 struct ellipsoid{
     float colorR;
     float colorG;
-    float clortB;
+    float colorB;
     float positionX;
     float positionY;
     float positionZ;
@@ -59,16 +59,20 @@ vector<cube> cubes;
 vector<sphere> spheres;
 vector<ellipsoid> ellipsoids;
 
+void createCube();
+void createSphere();
+void createEllipsoid();
+
 void keyboardPressed(unsigned char key, int x, int y)
 {
-    /*  switch(key) {
-     case '1':
-     newCube();
+     switch(key) {
+     case 'M':
+             createCube();
      case '2':
      case '3':
      case  27:   // ESC
      exit(0);
-     }*/
+     }
 }
 
 void mouseClick(int button, int state, int x, int y)
@@ -95,17 +99,33 @@ cube newCube(float cR, float cG, float cB, float x, float y, float z, float t, f
 
 sphere newSphere(float cR, float cG, float cB, float x, float y, float z, float t, float r){
     sphere mySphere;    // = {cR, cG, cB, x, y, z, t, r};
+    mySphere.colorB = cR;
+    mySphere.colorG = cG;
+    mySphere.colorB = cB;
+    mySphere.positionX = x;
+    mySphere.positionY = y;
+    mySphere.positionZ = z;
+    mySphere.trans = t;
+    mySphere.radio = r;
     return mySphere;
 }
 
 ellipsoid newEllipsoid(float cR, float cG, float cB, float x, float y, float z, float t, float r){
     ellipsoid myEllipsoid;  // = {cR, cG, cB, x, y, z, t, r};
+    myEllipsoid.colorB = cR;
+    myEllipsoid.colorG = cG;
+    myEllipsoid.colorB = cB;
+    myEllipsoid.positionX = x;
+    myEllipsoid.positionY = y;
+    myEllipsoid.positionZ = z;
+    myEllipsoid.trans = t;
+    myEllipsoid.radio = r;
     return myEllipsoid;
 }
 
 void drawSphere(float x, float y, float z) {
     //glRotatef(angleSph, 1.0f, 1.0f, 0.0f);  // Rotate about the (1,1,0)-axis [NEW]
-    glColor3d(1, 0, 0);
+    //glColor3d(1, 0, 0);
     glPushMatrix();
     glTranslatef(x, y, z);
     glutSolidSphere(0.5, 50, 50);
@@ -158,26 +178,38 @@ void drawCube(float x, float y, float z) {
 
 void createCube(){
     int rCR, rCG, rCB, rX, rY, rZ, rT;
-    rCR = rand()%(50)+50;
-    rCG = rand()%(50)+50;
-    rCB = rand()%(50)+50;
+    rCR = rand()%(2);
+    rCG = rand()%(2);
+    rCB = rand()%(2);
     rX = rand()%(4-(-4) + 1) + (-4);
     rY = rand()%(3- (-3) + 1) + (-3);
     rZ = (rand()%(99-0 + 1))*-1;
-    cube c = newCube(rCR*0.01, rCG*0.01, rCB*0.01, rX, rY, rZ, 0, 1);
-    cout << rand() << endl;
-    cout << c.positionX << endl;
-    cout << c.positionY << endl;
-    cout << c.positionZ << endl;
+    cube c = newCube(rCR, rCG, rCB, rX, rY, rZ, 0, 1);
     cubes.push_back(c);
 }
 
 void createSphere(){
-    
+    int rCR, rCG, rCB, rX, rY, rZ, rR;
+    rCR = rand()%(2);
+    rCG = rand()%(2);
+    rCB = rand()%(2);
+    rX = rand()%(4-(-4) + 1) + (-4);
+    rY = rand()%(3- (-3) + 1) + (-3);
+    rZ = (rand()%(99-0 + 1))*-1;
+    sphere s = newSphere(rCR, rCG, rCB, rX, rY, rZ, 0, 1);
+    spheres.push_back(s);
 }
 
 void createEllipsoid(){
-    
+    int rCR, rCG, rCB, rX, rY, rZ, rR;
+    rCR = rand()%(2);
+    rCG = rand()%(2);
+    rCB = rand()%(2);
+    rX = rand()%(4-(-4) + 1) + (-4);
+    rY = rand()%(3- (-3) + 1) + (-3);
+    rZ = (rand()%(99-0 + 1))*-1;
+    ellipsoid e = newEllipsoid(rCR, rCG, rCB, rX, rY, rZ, 0, 1);
+    ellipsoids.push_back(e);
 }
 
 /* Initialize OpenGL Graphics */
@@ -218,6 +250,16 @@ void display() {
     for (int i = 0; i<cubes.size(); i++) {
         glColor3f(cubes[i].colorR, cubes[i].colorG, cubes[i].colorB);
         drawCube(cubes[i].positionX, cubes[i].positionY, cubes[i].positionZ);
+    }
+    
+    for (int i = 0; i<spheres.size(); i++) {
+        glColor3f(spheres[i].colorR, spheres[i].colorG, spheres[i].colorB);
+        drawCube(spheres[i].positionX, spheres[i].positionY, spheres[i].positionZ);
+    }
+    
+    for (int i = 0; i<ellipsoids.size(); i++) {
+        glColor3f(ellipsoids[i].colorR, ellipsoids[i].colorG, ellipsoids[i].colorB);
+        drawCube(ellipsoids[i].positionX, ellipsoids[i].positionY, ellipsoids[i].positionZ);
     }
     /*
      glMatrixMode(GL_MODELVIEW);     // To operate on model-view matrix
