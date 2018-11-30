@@ -17,7 +17,9 @@
 using namespace std;
 
 // Global variables
-char title[] = "3D Shapes with animation";
+char title[] = "Proyecto Final";
+int w = 1600;
+int h = 900;
 GLfloat angleSph = 0.0f;  // Rotational angle for pyramid [NEW]
 GLfloat angleCube = 0.0f;     // Rotational angle for cube [NEW]
 int refreshMills = 15;        // refresh interval in milliseconds [NEW]
@@ -66,7 +68,7 @@ void createEllipsoid();
 void keyboardPressed(unsigned char key, int x, int y)
 {
      switch(key) {
-     case 'M':
+     case 'a':
              createCube();
      case '2':
      case '3':
@@ -86,7 +88,7 @@ void mouseClick(int button, int state, int x, int y)
 cube newCube(float cR, float cG, float cB, float x, float y, float z, float t, float l){
     
     cube myCube;    // = {cR, cG, cB, x, y, z, t, l};
-    myCube.colorB = cR;
+    myCube.colorR = cR;
     myCube.colorG = cG;
     myCube.colorB = cB;
     myCube.positionX = x;
@@ -99,7 +101,7 @@ cube newCube(float cR, float cG, float cB, float x, float y, float z, float t, f
 
 sphere newSphere(float cR, float cG, float cB, float x, float y, float z, float t, float r){
     sphere mySphere;    // = {cR, cG, cB, x, y, z, t, r};
-    mySphere.colorB = cR;
+    mySphere.colorR = cR;
     mySphere.colorG = cG;
     mySphere.colorB = cB;
     mySphere.positionX = x;
@@ -112,7 +114,7 @@ sphere newSphere(float cR, float cG, float cB, float x, float y, float z, float 
 
 ellipsoid newEllipsoid(float cR, float cG, float cB, float x, float y, float z, float t, float r){
     ellipsoid myEllipsoid;  // = {cR, cG, cB, x, y, z, t, r};
-    myEllipsoid.colorB = cR;
+    myEllipsoid.colorR = cR;
     myEllipsoid.colorG = cG;
     myEllipsoid.colorB = cB;
     myEllipsoid.positionX = x;
@@ -145,7 +147,7 @@ void drawEllipsoid(float x, float y, float z) {
     glColor3d(0, 0, 1);
     glPushMatrix();
     glTranslatef(x, y, z);
-    glScalef(0.5, 0.5, 1);
+    glScalef(0.75, 0.35, 0.35);
     glutSolidSphere(1, 50, 50);
     glPopMatrix();
     /*angleSph += 0.2f;
@@ -166,7 +168,7 @@ void drawCube(float x, float y, float z) {
     glTranslatef(x, y, z);
     glutSolidCube(1.0);
     glPopMatrix();
-    /*angleSph += 0.2f;
+        /*angleSph += 0.2f;
      
      if(tSph){
      glTranslatef(1, 0, 0);
@@ -193,6 +195,7 @@ void createSphere(){
     rCR = rand()%(2);
     rCG = rand()%(2);
     rCB = rand()%(2);
+    cout << "R: " << rCR << " G: " << rCG << " B: " << rCB << endl;
     rX = rand()%(4-(-4) + 1) + (-4);
     rY = rand()%(3- (-3) + 1) + (-3);
     rZ = (rand()%(99-0 + 1))*-1;
@@ -205,6 +208,7 @@ void createEllipsoid(){
     rCR = rand()%(2);
     rCG = rand()%(2);
     rCB = rand()%(2);
+    cout << "R: " << rCR << " G: " << rCG << " B: " << rCB << endl;
     rX = rand()%(4-(-4) + 1) + (-4);
     rY = rand()%(3- (-3) + 1) + (-3);
     rZ = (rand()%(99-0 + 1))*-1;
@@ -229,24 +233,78 @@ void display() {
     float i;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear color and depth buffers
     
-    //glMatrixMode(GL_MODELVIEW);
-    //glLoadIdentity();
+    //viewport
+    glViewport(0, 0, 300, h);
+    if (h == 0) h = 1;                // To prevent divide by 0
+    GLfloat aspect = (GLfloat)300 / (GLfloat)h;
+    // Set the aspect ratio of the clipping volume to match the viewport
+    glMatrixMode(GL_PROJECTION);  // To operate on the Projection matrix
+    glLoadIdentity();             // Reset
     
-    //The black are a z = -50
+    // Set up orthographic projection view [NEW]
+    if (300 >= h) {
+        // aspect >= 1, set the height from -1 to 1, with larger width
+        glOrtho(-1.0 * aspect, 1.0 * aspect, -1.0, 1.0, 0.1, 100);
+    } else {
+        // aspect < 1, set the width to -1 to 1, with larger height
+        glOrtho(-1.5, 1.5, -1.5 / aspect, 1.5 / aspect, 0.1, 100);
+    }
+    
+    //glLoadIdentity();
+    //gluLookAt(0.0, 0.0, 10.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+    //menu static figures
+    glColor3f(1.0f, 0.0f, 0.0f);
+    drawCube(0.0f, 0.0f, -6.0f);
+    glColor3f(0.0f, 1.0f, 0.0f);
+    drawSphere(0.0f, -2.0f, -6.0f);
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glRotatef(0.5f, 0.0f, 1.f, 0.0f);
+    drawEllipsoid(0.0f, 2.0f, -6.0f);
+    
+    glViewport(300, 150, w-300, h-150);
+    if (h == 0) h = 1;                // To prevent divide by 0
+    GLfloat aspect1 = (GLfloat)(w-300) / (GLfloat)(h-150);
+    // Set the aspect ratio of the clipping volume to match the viewport
+    glMatrixMode(GL_PROJECTION);  // To operate on the Projection matrix
+    glLoadIdentity();             // Reset
+    
+    // Set up orthographic projection view [NEW]
+    if (300 >= h) {
+        // aspect >= 1, set the height from -1 to 1, with larger width
+        glOrtho(-1.0 * aspect1, 1.0 * aspect1, -1.0, 1.0, 0.1, 100);
+    } else {
+        // aspect < 1, set the width to -1 to 1, with larger height
+        glOrtho(-8.0, 8.0, -8.0 / aspect1, 8.0 / aspect1, 0.1, 100);
+    }
+    
+    glViewport(0, 0, w-300, h-150);
+    if (h == 0) h = 1;                // To prevent divide by 0
+    GLfloat aspect2 = (GLfloat)(w-300) / (GLfloat)(h-150);
+    // Set the aspect ratio of the clipping volume to match the viewport
+    glMatrixMode(GL_PROJECTION);  // To operate on the Projection matrix
+    glLoadIdentity();             // Reset
+    
+    // Set up orthographic projection view [NEW]
+    if (300 >= h) {
+        // aspect >= 1, set the height from -1 to 1, with larger width
+        glOrtho(-1.0 * aspect2, 1.0 * aspect2, -1.0, 1.0, 0.1, 100);
+    } else {
+        // aspect < 1, set the width to -1 to 1, with larger height
+        glOrtho(-8.0, 8.0, -8.0 / aspect2, 8.0 / aspect2, 0.1, 100);
+    }
+    
+    //The black stripes are at z = -50
     glColor3f(0.0f, 0.0f, 0.0f);
-    for (i = -4.0f; i < 4; i = i+0.5) {
+    for (i = -5.0f; i < 5; i = i+0.5) {
         glBegin(GL_QUADS);
-        glVertex3f(i+0.25f, -3.0f, -50.0f);    //A
-        glVertex3f(i, -3.0f, -50.0f);    //B
-        glVertex3f(i,  3.0f, -50.0f);    //C
-        glVertex3f(i+0.25f,  3.0f, -50.0f);    //D
+        glVertex3f(i+0.25f, -3.0f, -50.0f);
+        glVertex3f(i, -3.0f, -50.0f);
+        glVertex3f(i, 3.0f, -50.0f);
+        glVertex3f(i+0.25f,  3.0f, -50.0f);
         glEnd();
     }
     
-    drawCube(0.0f, 0.0f, -6.0f);
-    drawSphere(-2.0f, 0.0f, -6.0f);
-    drawEllipsoid(2.0f, 0.0f, -6.0f);
-    
+    //Ploting figures
     for (int i = 0; i<cubes.size(); i++) {
         glColor3f(cubes[i].colorR, cubes[i].colorG, cubes[i].colorB);
         drawCube(cubes[i].positionX, cubes[i].positionY, cubes[i].positionZ);
@@ -318,8 +376,6 @@ void timer(int value) {
     glutTimerFunc(refreshMills, timer, 0); // next timer call milliseconds later
 }
 
-/* Handler for window re-size event. Called back when the window first appears and
- whenever the window is re-sized with its new width and height */
 void reshape(GLsizei width, GLsizei height) {  // GLsizei for non-negative integer
     // Compute aspect ratio of the new window
     if (height == 0) height = 1;                // To prevent divide by 0
@@ -338,7 +394,7 @@ void reshape(GLsizei width, GLsizei height) {  // GLsizei for non-negative integ
         glOrtho(-3.0 * aspect, 3.0 * aspect, -3.0, 3.0, 0.1, 100);
     } else {
         // aspect < 1, set the width to -1 to 1, with larger height
-        glOrtho(-3.0, 3.0, -3.0 / aspect, 3.0 / aspect, 0.1, 100);
+        glOrtho(-6.0, 6.0, -6.0 / aspect, 6.0 / aspect, 0.1, 100);
     }
 }
 
@@ -346,7 +402,7 @@ void reshape(GLsizei width, GLsizei height) {  // GLsizei for non-negative integ
 int main(int argc, char** argv) {
     glutInit(&argc, argv);            // Initialize GLUT
     glutInitDisplayMode(GLUT_DOUBLE); // Enable double buffered mode
-    glutInitWindowSize(640, 480);   // Set the window's initial width & height
+    glutInitWindowSize(w, h);   // Set the window's initial width & height
     glutInitWindowPosition(50, 50); // Position the window's initial top-left corner
     glutCreateWindow(title);          // Create window with the given title
     srand(time(0));
