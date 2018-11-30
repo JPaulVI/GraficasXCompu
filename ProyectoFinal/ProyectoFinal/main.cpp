@@ -70,6 +70,7 @@ void keyboardPressed(unsigned char key, int x, int y)
      switch(key) {
      case 'a':
              createCube();
+             break;
      case '2':
      case '3':
      case  27:   // ESC
@@ -179,19 +180,20 @@ void drawCube(float x, float y, float z) {
 }
 
 void createCube(){
-    int rCR, rCG, rCB, rX, rY, rZ, rT;
+    int rCR, rCG, rCB, rX, rY, rZ;
     rCR = rand()%(2);
     rCG = rand()%(2);
     rCB = rand()%(2);
-    rX = rand()%(4-(-4) + 1) + (-4);
-    rY = rand()%(3- (-3) + 1) + (-3);
-    rZ = (rand()%(99-0 + 1))*-1;
-    cube c = newCube(rCR, rCG, rCB, rX, rY, rZ, 0, 1);
+    rX = (rand()%(101)) + (-50);
+    rY = (rand()%(81)) + (-40);
+    rZ = (rand()%(21)) * -1;
+    cube c = newCube(rCR, rCG, rCB, rX*0.1, rY*0.1, rZ, 0, 1);
     cubes.push_back(c);
+    cout<<'z: '<<rZ<<endl;
 }
 
 void createSphere(){
-    int rCR, rCG, rCB, rX, rY, rZ, rR;
+    int rCR, rCG, rCB, rX, rY, rZ;
     rCR = rand()%(2);
     rCG = rand()%(2);
     rCB = rand()%(2);
@@ -204,15 +206,15 @@ void createSphere(){
 }
 
 void createEllipsoid(){
-    int rCR, rCG, rCB, rX, rY, rZ, rR;
+    int rCR, rCG, rCB, rX, rY, rZ;
     rCR = rand()%(2);
     rCG = rand()%(2);
     rCB = rand()%(2);
     cout << "R: " << rCR << " G: " << rCG << " B: " << rCB << endl;
-    rX = rand()%(4-(-4) + 1) + (-4);
-    rY = rand()%(3- (-3) + 1) + (-3);
-    rZ = (rand()%(99-0 + 1))*-1;
-    ellipsoid e = newEllipsoid(rCR, rCG, rCB, rX, rY, rZ, 0, 1);
+    rX = (rand()%(101)) + (-50);
+    rY = (rand()%(81)) + (-40);
+    rZ = (rand()%(21)) * -1;
+    ellipsoid e = newEllipsoid(rCR, rCG, rCB, rX*0.1, rY*0.1, rZ, 0, 1);
     ellipsoids.push_back(e);
 }
 
@@ -221,7 +223,7 @@ void initGL() {
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // Set background color to black and opaque
     glClearDepth(1.0f);                   // Set background depth to farthest
     glEnable(GL_DEPTH_TEST);   // Enable depth testing for z-culling
-    glDepthFunc(GL_LEQUAL);    // Set the type of depth-test
+    glDepthFunc(GL_LESS);    // Set the type of depth-test
     glShadeModel(GL_SMOOTH);   // Enable smooth shading
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);  // Nice perspective corrections
 }
@@ -233,7 +235,7 @@ void display() {
     float i;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear color and depth buffers
     
-    //viewport
+    //viewport menu figures
     glViewport(0, 0, 300, h);
     if (h == 0) h = 1;                // To prevent divide by 0
     GLfloat aspect = (GLfloat)300 / (GLfloat)h;
@@ -250,8 +252,6 @@ void display() {
         glOrtho(-1.5, 1.5, -1.5 / aspect, 1.5 / aspect, 0.1, 100);
     }
     
-    //glLoadIdentity();
-    //gluLookAt(0.0, 0.0, 10.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
     //menu static figures
     glColor3f(1.0f, 0.0f, 0.0f);
     drawCube(0.0f, 0.0f, -6.0f);
@@ -261,6 +261,7 @@ void display() {
     glRotatef(0.5f, 0.0f, 1.f, 0.0f);
     drawEllipsoid(0.0f, 2.0f, -6.0f);
     
+    //Viewport stripes scene
     glViewport(300, 150, w-300, h-150);
     if (h == 0) h = 1;                // To prevent divide by 0
     GLfloat aspect1 = (GLfloat)(w-300) / (GLfloat)(h-150);
@@ -276,7 +277,8 @@ void display() {
         // aspect < 1, set the width to -1 to 1, with larger height
         glOrtho(-8.0, 8.0, -8.0 / aspect1, 8.0 / aspect1, 0.1, 100);
     }
-    
+    /*
+    //Viewport command menu
     glViewport(0, 0, w-300, h-150);
     if (h == 0) h = 1;                // To prevent divide by 0
     GLfloat aspect2 = (GLfloat)(w-300) / (GLfloat)(h-150);
@@ -291,16 +293,16 @@ void display() {
     } else {
         // aspect < 1, set the width to -1 to 1, with larger height
         glOrtho(-8.0, 8.0, -8.0 / aspect2, 8.0 / aspect2, 0.1, 100);
-    }
+    }*/
     
     //The black stripes are at z = -50
     glColor3f(0.0f, 0.0f, 0.0f);
     for (i = -5.0f; i < 5; i = i+0.5) {
         glBegin(GL_QUADS);
-        glVertex3f(i+0.25f, -3.0f, -50.0f);
-        glVertex3f(i, -3.0f, -50.0f);
-        glVertex3f(i, 3.0f, -50.0f);
-        glVertex3f(i+0.25f,  3.0f, -50.0f);
+        glVertex3f(i+0.25f, -5.0f, -10.0f);
+        glVertex3f(i, -5.0f, -10.0f);
+        glVertex3f(i, 5.0f, -10.0f);
+        glVertex3f(i+0.25f,  5.0f, -10.0f);
         glEnd();
     }
     
