@@ -41,6 +41,9 @@ bool cSph = false;
 bool isCubeMoving = false;
 bool isEllipsoidMoving = false;
 bool isSphereMoving = false;
+bool isCubeSpinning = false;
+bool isEllipsoidSpinnig = false;
+bool isSphereSpinning = false;
 char fig = 's';
 //menu commands text
 //string str[];
@@ -58,6 +61,7 @@ struct cube{
     float positionX;
     float positionY;
     float positionZ;
+    float angle;
     float trans;
     float large;
     float dx;
@@ -87,6 +91,7 @@ struct ellipsoid{
     float positionX;
     float positionY;
     float positionZ;
+    float angle;
     float trans;
     float radio;
     float dx;
@@ -102,6 +107,7 @@ void createCube();
 void createSphere();
 void createEllipsoid();
 void setMov(char fig);
+void setRot(char fig);
 
 void keyboardPressed(unsigned char key, int x, int y)
 {
@@ -117,6 +123,9 @@ void keyboardPressed(unsigned char key, int x, int y)
              break;
          case 'm':
              setMov(fig);
+             break;
+         case 'r':
+             setRot(fig);
              break;
      case  27:   // ESC
      exit(0);
@@ -161,6 +170,7 @@ cube newCube(float cR, float cG, float cB, float x, float y, float z, float t, f
     myCube.dy = 0;
     myCube.dz = 0;
     myCube.dt = 0;
+    myCube.angle = 0;
     return myCube;
 }
 
@@ -195,6 +205,7 @@ ellipsoid newEllipsoid(float cR, float cG, float cB, float x, float y, float z, 
     myEllipsoid.dy = 0;
     myEllipsoid.dz = 0;
     myEllipsoid.dt = 0;
+    myEllipsoid.angle = 0;
     return myEllipsoid;
 }
 
@@ -214,10 +225,11 @@ void drawSphere(float x, float y, float z) {
      }*/
 }
 
-void drawEllipsoid(float x, float y, float z) {
+void drawEllipsoid(float x, float y, float z, float t) {
     //glRotatef(angleSph, 1.0f, 1.0f, 0.0f);  // Rotate about the (1,1,0)-axis [NEW]
     glPushMatrix();
     glTranslatef(x, y, z);
+    glRotatef(t, 0, 1, 0);
     glScalef(0.75, 0.35, 0.35);
     glutSolidSphere(1, 50, 50);
     glPopMatrix();
@@ -231,12 +243,13 @@ void drawEllipsoid(float x, float y, float z) {
      }*/
 }
 
-void drawCube(float x, float y, float z) {
+void drawCube(float x, float y, float z, float t) {
     // Render a pyramid consists of 4 triangles
     //glRotatef(angleSph, 1.0f, 1.0f, 0.0f);  // Rotate about the (1,1,0)-axis [NEW]
     glPushMatrix();
     //glColor3f(0, 1,0);
     glTranslatef(x, y, z);
+    glRotatef(t, 1, 0, 0);
     glutSolidCube(1.0);
     glPopMatrix();
         /*angleSph += 0.2f;
@@ -332,18 +345,21 @@ void setMov(char fig){
 void setRot(char fig){
     
     if(fig == 'c'){
+        isCubeSpinning = !isCubeSpinning;
         for(int i=0;i<cubes.size();i++){
-            cubes[i].dt = rand()%(101)*0.1;
+            cubes[i].dt = rand()%(101)*0.001;
         }
     }
     if(fig == 'e'){
+        isEllipsoidSpinnig = !isEllipsoidSpinnig;
         for(int i=0;i<ellipsoids.size();i++){
-            ellipsoids[i].dt = rand()%(101)*0.1;
+            ellipsoids[i].dt = rand()%(101)*0.001;
         }
     }
     if(fig == 's'){
+        isSphereSpinning = !isSphereSpinning;
         for(int i=0;i<spheres.size();i++){
-            spheres[i].dt = rand()%(101)*0.1;
+            spheres[i].dt = rand()%(101)*0.001;
         }
     }
     
@@ -407,11 +423,29 @@ void movSphere(sphere &s){
     
 }
 
+void rotCube(cube &c){
+    
+    c.angle += c.dt;
+    
+}
+
+void rotEllipsoid(ellipsoid &e){
+    
+    e.angle += e.dt;
+    
+}
+
 void addDeltas(int x){
     
     if(isCubeMoving){
         for(int i=0; i<cubes.size(); i++){
             movCube(cubes[i]);
+        }
+    }
+    
+    if(isCubeSpinning){
+        for(int i=0; i<cubes.size(); i++){
+            rotCube(cubes[i]);
         }
     }
     
@@ -421,11 +455,18 @@ void addDeltas(int x){
         }
     }
     
+    if(isEllipsoidSpinnig){
+        for(int i=0; i<ellipsoids.size(); i++){
+            rotEllipsoid(ellipsoids[i]);
+        }
+    }
+    
     if(isSphereMoving){
         for(int i=0; i<spheres.size(); i++){
             movSphere(spheres[i]);
         }
     }
+    
     glutPostRedisplay();
     glutTimerFunc(25, addDeltas, 0);
 }
@@ -452,16 +493,25 @@ void display() {
     //glLightModelfv(GL_LIGHT_MODEL_AMBIENT, arreglo, );
     //glLightfv(GL_LIGHT0, GL_DIFUSE, arreglo)
     //glLightfv(GL_LIGHT0, GL_POSITION, arreglo)
-    
+    /*
     GLfloat dirVector [ ] = {1.0, 0.0, 0.0};
     GLfloat light1PosType [ ] = {2.0, 0.0, 3.0, 1.0};
-    glLightfv (GL_LIGHT1, GL_SPOT_DIRECTION, dirVector);
-    glLightfv (GL_LIGHT1,GL_POSITION, light1PosType);
-    glEnable (GL_LIGHT1);
     GLfloat light2PosType [ ] = {0.0, 1.0, 0.0, 0.0};
-    glLightfv (GL_LIGHT2, GL_DIFFUSE, dirVector);
+    glLightfv (GL_LIGHT0, GL_SPOT_DIRECTION, dirVector);
+    glLightfv (GL_LIGHT0,GL_POSITION, light1PosType);
+    glEnable (GL_LIGHT0);
+    glLightfv (GL_LIGHT1, GL_DIFFUSE, dirVector);
     glLightfv (GL_LIGHT1,GL_POSITION, light2PosType);
-    glEnable (GL_LIGHT2);
+    glEnable (GL_LIGHT1);*/
+    //GLfloat blackColor [ ] = {0.0, 0.0, 0.0, 1.0};
+  
+    GLfloat dirVector [ ] = {1.0, 0.0, 0.0};
+    GLfloat light0PosType [ ] = {2.0, 0.0, 3.0, 1.0};
+    GLfloat whiteColor [ ] = {1.0, 1.0, 1.0, 0.0};
+    glLightfv (GL_LIGHT0, GL_SPOT_DIRECTION, dirVector);
+    glLightfv (GL_LIGHT0, GL_AMBIENT, whiteColor);
+    glLightfv(GL_LIGHT0, GL_POSITION, light0PosType);
+    glEnable (GL_LIGHT0);
     
     //viewport menu figures
     glViewport(0, 0, 300, h-150);
@@ -473,15 +523,16 @@ void display() {
     //menu static figures
     glColor3f(1.0f, 0.0f, 0.0f);
     glRotatef(0.5f, 0.0f, 1.f, 0.0f);
-    drawEllipsoid(0.0f, 2.0f, -6.0f);
+    drawEllipsoid(0.0f, 2.0f, -6.0f, 0);
     glColor3f(0.0f, 1.0f, 0.0f);
-    drawCube(0.0f, 0.0f, -6.0f);
+    drawCube(0.0f, 0.0f, -6.0f, 0);
     glColor3f(0.0f, 0.0f, 1.0f);
     drawSphere(0.0f, -2.0f, -6.0f);
     
     //Viewport stripes scene
     glViewport(300, 150, w-300, h-150);
     GLfloat aspect1 = (GLfloat)(w-300) / (GLfloat)(h-150);
+    
     glMatrixMode(GL_PROJECTION);  // To operate on the Projection matrix
     glLoadIdentity();             // Reset
     glOrtho(-8.0, 8.0, -8.0 / aspect1, 8.0 / aspect1, 0.1, 100);
@@ -502,7 +553,7 @@ void display() {
     for (int i = 0; i<cubes.size(); i++) {
         glColor3f(cubes[i].colorR, cubes[i].colorG, cubes[i].colorB);
         glPushMatrix();
-        drawCube(cubes[i].positionX, cubes[i].positionY, cubes[i].positionZ);
+        drawCube(cubes[i].positionX, cubes[i].positionY, cubes[i].positionZ, cubes[i].angle);
         glPopMatrix();
     }
     
@@ -516,7 +567,7 @@ void display() {
     for (int i = 0; i<ellipsoids.size(); i++) {
         glColor3f(ellipsoids[i].colorR, ellipsoids[i].colorG, ellipsoids[i].colorB);
         glPushMatrix();
-        drawEllipsoid(ellipsoids[i].positionX, ellipsoids[i].positionY, ellipsoids[i].positionZ);
+        drawEllipsoid(ellipsoids[i].positionX, ellipsoids[i].positionY, ellipsoids[i].positionZ, ellipsoids[i].angle);
         glPopMatrix();
     }
     
