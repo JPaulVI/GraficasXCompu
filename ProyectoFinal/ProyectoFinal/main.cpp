@@ -17,16 +17,40 @@
 using namespace std;
 
 // Global variables
+//title of the proyect
 char title[] = "Proyecto Final";
+//width and height of the window
 int w = 1600;
 int h = 900;
+//limits of scene
+int xmin = -6;
+int xmax = 6;
+int ymin= -5;
+int ymax = 5;
+int zmin = 0;
+int zmax = -20;
+int zint = -10;
+//angle variables
 GLfloat angleSph = 0.0f;  // Rotational angle for pyramid [NEW]
 GLfloat angleCube = 0.0f;     // Rotational angle for cube [NEW]
 int refreshMills = 15;        // refresh interval in milliseconds [NEW]
 GLboolean d = true;
-int numSph = 2; //variable de prueba
+//?
 bool tSph = true;
 bool cSph = false;
+bool isCubeMoving = false;
+bool isEllipsoidMoving = false;
+bool isSphereMoving = false;
+char fig = 's';
+//menu commands text
+//string str[];
+char e[] = "E        Escalar";
+char m[] = "M       Mover";
+char c[] = "C        Cambiar de color";
+char r[] = "R        Rotar";
+char t[] = "T        Transparente";
+char esc[] = "ESC    Salir";
+
 struct cube{
     float colorR;
     float colorG;
@@ -36,7 +60,12 @@ struct cube{
     float positionZ;
     float trans;
     float large;
+    float dx;
+    float dy;
+    float dz;
+    float dt;
 };
+
 struct sphere{
     float colorR;
     float colorG;
@@ -46,6 +75,10 @@ struct sphere{
     float positionZ;
     float trans;
     float radio;
+    float dx;
+    float dy;
+    float dz;
+    float dt;
 };
 struct ellipsoid{
     float colorR;
@@ -56,6 +89,10 @@ struct ellipsoid{
     float positionZ;
     float trans;
     float radio;
+    float dx;
+    float dy;
+    float dz;
+    float dt;
 };
 vector<cube> cubes;
 vector<sphere> spheres;
@@ -64,15 +101,23 @@ vector<ellipsoid> ellipsoids;
 void createCube();
 void createSphere();
 void createEllipsoid();
+void setMov(char fig);
 
 void keyboardPressed(unsigned char key, int x, int y)
 {
      switch(key) {
-     case 'a':
+         case 'c':
              createCube();
              break;
-     case '2':
-     case '3':
+         case 's':
+             createSphere();
+             break;
+         case 'e':
+             createEllipsoid();
+             break;
+         case 'm':
+             setMov(fig);
+             break;
      case  27:   // ESC
      exit(0);
      }
@@ -84,11 +129,26 @@ void mouseClick(int button, int state, int x, int y)
     cout<<state;
     cout<<"x: "<<x;
     cout<<"y: "<<y<<endl;
+    
+    if(button == 0 && state == 0){
+        if(x<300){
+            if(y<290){
+                fig = 'e';
+            } else{
+                if(y<500){
+                    fig = 'c';
+                }else{
+                    fig = 's';
+                }
+            }
+        }
+        cout << fig << endl;
+    }
+    
 }
 
 cube newCube(float cR, float cG, float cB, float x, float y, float z, float t, float l){
-    
-    cube myCube;    // = {cR, cG, cB, x, y, z, t, l};
+    cube myCube;
     myCube.colorR = cR;
     myCube.colorG = cG;
     myCube.colorB = cB;
@@ -97,11 +157,15 @@ cube newCube(float cR, float cG, float cB, float x, float y, float z, float t, f
     myCube.positionZ = z;
     myCube.trans = t;
     myCube.large = l;
+    myCube.dx = 0;
+    myCube.dy = 0;
+    myCube.dz = 0;
+    myCube.dt = 0;
     return myCube;
 }
 
 sphere newSphere(float cR, float cG, float cB, float x, float y, float z, float t, float r){
-    sphere mySphere;    // = {cR, cG, cB, x, y, z, t, r};
+    sphere mySphere;
     mySphere.colorR = cR;
     mySphere.colorG = cG;
     mySphere.colorB = cB;
@@ -110,11 +174,15 @@ sphere newSphere(float cR, float cG, float cB, float x, float y, float z, float 
     mySphere.positionZ = z;
     mySphere.trans = t;
     mySphere.radio = r;
+    mySphere.dx = 0;
+    mySphere.dy = 0;
+    mySphere.dz = 0;
+    mySphere.dt = 0;
     return mySphere;
 }
 
 ellipsoid newEllipsoid(float cR, float cG, float cB, float x, float y, float z, float t, float r){
-    ellipsoid myEllipsoid;  // = {cR, cG, cB, x, y, z, t, r};
+    ellipsoid myEllipsoid;
     myEllipsoid.colorR = cR;
     myEllipsoid.colorG = cG;
     myEllipsoid.colorB = cB;
@@ -123,16 +191,19 @@ ellipsoid newEllipsoid(float cR, float cG, float cB, float x, float y, float z, 
     myEllipsoid.positionZ = z;
     myEllipsoid.trans = t;
     myEllipsoid.radio = r;
+    myEllipsoid.dx = 0;
+    myEllipsoid.dy = 0;
+    myEllipsoid.dz = 0;
+    myEllipsoid.dt = 0;
     return myEllipsoid;
 }
 
 void drawSphere(float x, float y, float z) {
     //glRotatef(angleSph, 1.0f, 1.0f, 0.0f);  // Rotate about the (1,1,0)-axis [NEW]
-    //glColor3d(1, 0, 0);
-    glPushMatrix();
+    //glPushMatrix();
     glTranslatef(x, y, z);
     glutSolidSphere(0.5, 50, 50);
-    glPopMatrix();
+    //glPopMatrix();
     /*angleSph += 0.2f;
      
      if(tSph){
@@ -145,7 +216,6 @@ void drawSphere(float x, float y, float z) {
 
 void drawEllipsoid(float x, float y, float z) {
     //glRotatef(angleSph, 1.0f, 1.0f, 0.0f);  // Rotate about the (1,1,0)-axis [NEW]
-    glColor3d(0, 0, 1);
     glPushMatrix();
     glTranslatef(x, y, z);
     glScalef(0.75, 0.35, 0.35);
@@ -164,8 +234,8 @@ void drawEllipsoid(float x, float y, float z) {
 void drawCube(float x, float y, float z) {
     // Render a pyramid consists of 4 triangles
     //glRotatef(angleSph, 1.0f, 1.0f, 0.0f);  // Rotate about the (1,1,0)-axis [NEW]
-    //glColor3d(0, 1, 0);
     glPushMatrix();
+    //glColor3f(0, 1,0);
     glTranslatef(x, y, z);
     glutSolidCube(1.0);
     glPopMatrix();
@@ -189,7 +259,6 @@ void createCube(){
     rZ = (rand()%(21)) * -1;
     cube c = newCube(rCR, rCG, rCB, rX*0.1, rY*0.1, rZ, 0, 1);
     cubes.push_back(c);
-    cout<<'z: '<<rZ<<endl;
 }
 
 void createSphere(){
@@ -198,10 +267,10 @@ void createSphere(){
     rCG = rand()%(2);
     rCB = rand()%(2);
     cout << "R: " << rCR << " G: " << rCG << " B: " << rCB << endl;
-    rX = rand()%(4-(-4) + 1) + (-4);
-    rY = rand()%(3- (-3) + 1) + (-3);
-    rZ = (rand()%(99-0 + 1))*-1;
-    sphere s = newSphere(rCR, rCG, rCB, rX, rY, rZ, 0, 1);
+    rX = (rand()%(101)) + (-50);
+    rY = (rand()%(81)) + (-40);
+    rZ = (rand()%(21)) * -1;
+    sphere s = newSphere(rCR, rCG, rCB, rX*0.1, rY*0.1, rZ, 0, 1);
     spheres.push_back(s);
 }
 
@@ -210,12 +279,155 @@ void createEllipsoid(){
     rCR = rand()%(2);
     rCG = rand()%(2);
     rCB = rand()%(2);
-    cout << "R: " << rCR << " G: " << rCG << " B: " << rCB << endl;
     rX = (rand()%(101)) + (-50);
     rY = (rand()%(81)) + (-40);
     rZ = (rand()%(21)) * -1;
     ellipsoid e = newEllipsoid(rCR, rCG, rCB, rX*0.1, rY*0.1, rZ, 0, 1);
     ellipsoids.push_back(e);
+}
+
+/*
+void renderBitmapString(float x, float y,char str){
+    const char *c;
+    glRasterPos2f(x, y);
+    c = str.
+    for (c=str; *c != '\0'; c++) {
+        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_10, *c);
+    }
+}
+*/
+
+void setMov(char fig){
+
+    if(fig == 'c'){
+        isCubeMoving = !isCubeMoving;
+        cout<<"isCubeMoving"<<isCubeMoving<<endl;
+        for(int i=0;i<cubes.size();i++){
+            cubes[i].dx = rand()%(101)*0.001;
+            cubes[i].dy = rand()%(101)*0.001;
+            //cubes[i].dy = 0;
+            cubes[i].dz = 0;
+        }
+    }
+    if(fig == 'e'){
+        isEllipsoidMoving = !isEllipsoidMoving;
+        for(int i=0;i<ellipsoids.size();i++){
+            ellipsoids[i].dx = 0;
+            ellipsoids[i].dy = rand()%(101)*0.001;
+            ellipsoids[i].dz = rand()%(101)*0.001;
+            //ellipsoids[i].dz = 0;
+        }
+    }
+    if(fig == 's'){
+        isSphereMoving = !isSphereMoving;
+        for(int i=0;i<spheres.size();i++){
+            spheres[i].dx = rand()%(101)*0.001;
+            spheres[i].dy = rand()%(101)*0.001;
+            spheres[i].dz = rand()%(101)*0.001;
+        }
+    }
+    
+}
+
+void setRot(char fig){
+    
+    if(fig == 'c'){
+        for(int i=0;i<cubes.size();i++){
+            cubes[i].dt = rand()%(101)*0.1;
+        }
+    }
+    if(fig == 'e'){
+        for(int i=0;i<ellipsoids.size();i++){
+            ellipsoids[i].dt = rand()%(101)*0.1;
+        }
+    }
+    if(fig == 's'){
+        for(int i=0;i<spheres.size();i++){
+            spheres[i].dt = rand()%(101)*0.1;
+        }
+    }
+    
+}
+
+void movCube(cube &c){
+    
+    if(c.positionX<xmin || c.positionX>xmax){
+        c.dx = (-c.dx);
+    }
+    
+    if(c.positionY<ymin || c.positionY>ymax){
+        c.dy = -c.dy;
+    }
+    
+    c.positionX = c.positionX + c.dx;
+    cout<<"delta x: "<<c.dx<<endl;
+    cout<<"pos x: "<<c.positionX<<endl;
+    c.positionY += c.dy;
+    
+    //glTranslatef(c.positionX+c.dx, c.positionY+c.dy, c.positionZ);
+    
+}
+
+void movEllipsoid(ellipsoid &e){
+    
+    if(e.positionY<ymin || e.positionY>ymax){
+        e.dy = -e.dy;
+    }
+    
+    if(e.positionZ<zmin || e.positionZ>zmax){
+        e.dz = -e.dz;
+    }
+    
+    e.positionY += e.dy;
+    e.positionZ += e.dz;
+    
+    //glTranslatef(e.positionX, e.positionY+e.dy, e.positionZ+e.dz);
+    
+}
+
+void movSphere(sphere &s){
+    
+    if(s.positionX<xmin || s.positionX>xmax){
+        s.dx = -s.dx;
+    }
+    
+    if(s.positionY<ymin || s.positionY>ymax){
+        s.dy = -s.dy;
+    }
+    
+    if(s.positionZ<zmin || s.positionZ>zmax){
+        s.dz = -s.dz;
+    }
+    
+    s.positionX += s.dx;
+    s.positionY += s.dy;
+    s.positionZ += s.dz;
+    
+    //glTranslatef(s.positionX+s.dx, s.positionY+s.dy, s.positionZ+s.dz);
+    
+}
+
+void addDeltas(int x){
+    
+    if(isCubeMoving){
+        for(int i=0; i<cubes.size(); i++){
+            movCube(cubes[i]);
+        }
+    }
+    
+    if(isEllipsoidMoving){
+        for(int i=0; i<ellipsoids.size(); i++){
+            movEllipsoid(ellipsoids[i]);
+        }
+    }
+    
+    if(isSphereMoving){
+        for(int i=0; i<spheres.size(); i++){
+            movSphere(spheres[i]);
+        }
+    }
+    glutPostRedisplay();
+    glutTimerFunc(25, addDeltas, 0);
 }
 
 /* Initialize OpenGL Graphics */
@@ -235,69 +447,48 @@ void display() {
     float i;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear color and depth buffers
     
+    glMatrixMode(GL_MODELVIEW);  // To operate on the Projection matrix
+    glLoadIdentity();
+    //glLightModelfv(GL_LIGHT_MODEL_AMBIENT, arreglo, );
+    //glLightfv(GL_LIGHT0, GL_DIFUSE, arreglo)
+    //glLightfv(GL_LIGHT0, GL_POSITION, arreglo)
+    
+    GLfloat dirVector [ ] = {1.0, 0.0, 0.0};
+    GLfloat light1PosType [ ] = {2.0, 0.0, 3.0, 1.0};
+    glLightfv (GL_LIGHT1, GL_SPOT_DIRECTION, dirVector);
+    glLightfv (GL_LIGHT1,GL_POSITION, light1PosType);
+    glEnable (GL_LIGHT1);
+    GLfloat light2PosType [ ] = {0.0, 1.0, 0.0, 0.0};
+    glLightfv (GL_LIGHT2, GL_DIFFUSE, dirVector);
+    glLightfv (GL_LIGHT1,GL_POSITION, light2PosType);
+    glEnable (GL_LIGHT2);
+    
     //viewport menu figures
-    glViewport(0, 0, 300, h);
-    if (h == 0) h = 1;                // To prevent divide by 0
-    GLfloat aspect = (GLfloat)300 / (GLfloat)h;
-    // Set the aspect ratio of the clipping volume to match the viewport
+    glViewport(0, 0, 300, h-150);
+    GLfloat aspect = (GLfloat)300 / (GLfloat)(h-150);
     glMatrixMode(GL_PROJECTION);  // To operate on the Projection matrix
     glLoadIdentity();             // Reset
-    
-    // Set up orthographic projection view [NEW]
-    if (300 >= h) {
-        // aspect >= 1, set the height from -1 to 1, with larger width
-        glOrtho(-1.0 * aspect, 1.0 * aspect, -1.0, 1.0, 0.1, 100);
-    } else {
-        // aspect < 1, set the width to -1 to 1, with larger height
-        glOrtho(-1.5, 1.5, -1.5 / aspect, 1.5 / aspect, 0.1, 100);
-    }
+    glOrtho(-1.5, 1.5, -1.5 / aspect, 1.5 / aspect, 0.1, 100);
     
     //menu static figures
     glColor3f(1.0f, 0.0f, 0.0f);
-    drawCube(0.0f, 0.0f, -6.0f);
-    glColor3f(0.0f, 1.0f, 0.0f);
-    drawSphere(0.0f, -2.0f, -6.0f);
-    glColor3f(0.0f, 0.0f, 1.0f);
     glRotatef(0.5f, 0.0f, 1.f, 0.0f);
     drawEllipsoid(0.0f, 2.0f, -6.0f);
+    glColor3f(0.0f, 1.0f, 0.0f);
+    drawCube(0.0f, 0.0f, -6.0f);
+    glColor3f(0.0f, 0.0f, 1.0f);
+    drawSphere(0.0f, -2.0f, -6.0f);
     
     //Viewport stripes scene
     glViewport(300, 150, w-300, h-150);
-    if (h == 0) h = 1;                // To prevent divide by 0
     GLfloat aspect1 = (GLfloat)(w-300) / (GLfloat)(h-150);
-    // Set the aspect ratio of the clipping volume to match the viewport
     glMatrixMode(GL_PROJECTION);  // To operate on the Projection matrix
     glLoadIdentity();             // Reset
-    
-    // Set up orthographic projection view [NEW]
-    if (300 >= h) {
-        // aspect >= 1, set the height from -1 to 1, with larger width
-        glOrtho(-1.0 * aspect1, 1.0 * aspect1, -1.0, 1.0, 0.1, 100);
-    } else {
-        // aspect < 1, set the width to -1 to 1, with larger height
-        glOrtho(-8.0, 8.0, -8.0 / aspect1, 8.0 / aspect1, 0.1, 100);
-    }
-    /*
-    //Viewport command menu
-    glViewport(0, 0, w-300, h-150);
-    if (h == 0) h = 1;                // To prevent divide by 0
-    GLfloat aspect2 = (GLfloat)(w-300) / (GLfloat)(h-150);
-    // Set the aspect ratio of the clipping volume to match the viewport
-    glMatrixMode(GL_PROJECTION);  // To operate on the Projection matrix
-    glLoadIdentity();             // Reset
-    
-    // Set up orthographic projection view [NEW]
-    if (300 >= h) {
-        // aspect >= 1, set the height from -1 to 1, with larger width
-        glOrtho(-1.0 * aspect2, 1.0 * aspect2, -1.0, 1.0, 0.1, 100);
-    } else {
-        // aspect < 1, set the width to -1 to 1, with larger height
-        glOrtho(-8.0, 8.0, -8.0 / aspect2, 8.0 / aspect2, 0.1, 100);
-    }*/
+    glOrtho(-8.0, 8.0, -8.0 / aspect1, 8.0 / aspect1, 0.1, 100);
     
     //The black stripes are at z = -50
     glColor3f(0.0f, 0.0f, 0.0f);
-    for (i = -5.0f; i < 5; i = i+0.5) {
+    for (i = -6.0f; i < 6; i = i+0.5) {
         glBegin(GL_QUADS);
         glVertex3f(i+0.25f, -5.0f, -10.0f);
         glVertex3f(i, -5.0f, -10.0f);
@@ -305,72 +496,65 @@ void display() {
         glVertex3f(i+0.25f,  5.0f, -10.0f);
         glEnd();
     }
-    
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
     //Ploting figures
     for (int i = 0; i<cubes.size(); i++) {
         glColor3f(cubes[i].colorR, cubes[i].colorG, cubes[i].colorB);
+        glPushMatrix();
         drawCube(cubes[i].positionX, cubes[i].positionY, cubes[i].positionZ);
+        glPopMatrix();
     }
     
     for (int i = 0; i<spheres.size(); i++) {
         glColor3f(spheres[i].colorR, spheres[i].colorG, spheres[i].colorB);
-        drawCube(spheres[i].positionX, spheres[i].positionY, spheres[i].positionZ);
+        glPushMatrix();
+        drawSphere(spheres[i].positionX, spheres[i].positionY, spheres[i].positionZ);
+        glPopMatrix();
     }
     
     for (int i = 0; i<ellipsoids.size(); i++) {
         glColor3f(ellipsoids[i].colorR, ellipsoids[i].colorG, ellipsoids[i].colorB);
-        drawCube(ellipsoids[i].positionX, ellipsoids[i].positionY, ellipsoids[i].positionZ);
+        glPushMatrix();
+        drawEllipsoid(ellipsoids[i].positionX, ellipsoids[i].positionY, ellipsoids[i].positionZ);
+        glPopMatrix();
     }
+    
+    //Viewport command menu
+    glViewport(0, 0, w, 150);
+    GLfloat aspect2 = (GLfloat)(w) / (GLfloat)(150);
+    glMatrixMode(GL_PROJECTION);  // To operate on the Projection matrix
+    glLoadIdentity();             // Reset
+    glOrtho(-8.0, 8.0, -8.0 / aspect2, 8.0 / aspect2, 0.1, 100);
+    
     /*
-     glMatrixMode(GL_MODELVIEW);     // To operate on model-view matrix
-     // Render a color-cube consisting of 6 quads with different colors
-     glLoadIdentity();                 // Reset the model-view matrix
-     glTranslatef(1.5f, 0.0f, -7.0f);  // Move right and into the screen
-     //glRotatef(angleCube, 1.0f, 1.0f, 1.0f);  // Rotate about (1,1,1)-axis [NEW]
-     
-     glLoadIdentity();
-     glTranslatef(0, 0.0, 0.0);
-     glPushMatrix();
-     glutSolidCube(0.5);
-     glPopMatrix();*/
+    glFontBegin(&font);
+    glScalef(8.0, 8.0, 8.0);
+    glTranslatef(30, 30, 0);
+    glFontTextOut("Test", 5, 5, 0);
+    glFontEnd();
+    glFlush();*/
     
+    /*
+    glPushMatrix();
+    glLoadIdentity();
+    renderBitmapString(50,100,"Font Rendering - Programming Techniques");
+    //renderBitmapString(300,220, (void*)font, s);
+    renderBitmapString(300,240,"Esc - Quit");
+    glPopMatrix();
+     */
     
-    // Render a ellipsoid
-    //glLoadIdentity();
-    //glTranslatef(-1.5f, 0.0f, -6.0f);
-    //glRotatef(angleSph, 1.0f, 1.0f, 0.0f);
-    /*drawSphere(-1.5f, 0.0f, -6.0f);
-     if(d == true){
-     drawSphere(-1.4f, 0.1f, -6.1f);
-     }
-     if(d==true){
-     drawSphere(-1.6f, 0.2f, -6.2f);
-     }
-     //drawSphere(-1.6f, 0.2f, -6.2f);
-     
-     for(int i=0;i<numSph;i++){
-     drawSphere(-1.5f+(0.2*i), 0.0f+(0.2*i), -6.0f+(0.2*i));
-     }*/
-    //glPushMatrix();
-    //glTranslatef(0, 0.0, 0.0);
-    //glutWireSphere(1.5, 50, 50);
-    /*glPushMatrix();
-     glTranslatef(0, 0.0, 0.0);
-     glScalef(0.5, 0.5, 1);
-     glutSolidSphere(1.5, 50, 50);*/
+    /*
+    //set the position of the text in the window
+    glRasterPos3f(x3, y3, z3);
+    //get the length of the string to display
+    int len = (int)strlen(string);
+    //loop to display character by character
+    for (int i1 = 0; i1 < len; i1++)
+        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_10, string[i1]);
+  */
     glutSwapBuffers();  // Swap the front and back frame buffers (double buffering)
-    /*
-     // Update the rotational angle after each refresh [NEW]
-     angleSph += 0.2f;
-     angleCube -= 0.15f;*/
-    
 }
-
-void sphere() {
-    
-}
-
-
 
 /* Called back when timer expired [NEW] */
 void timer(int value) {
@@ -393,10 +577,10 @@ void reshape(GLsizei width, GLsizei height) {  // GLsizei for non-negative integ
     // Set up orthographic projection view [NEW]
     if (width >= height) {
         // aspect >= 1, set the height from -1 to 1, with larger width
-        glOrtho(-3.0 * aspect, 3.0 * aspect, -3.0, 3.0, 0.1, 100);
+        glOrtho(-3.0 *aspect,3.0*aspect, -3.0, 3.0, 0.1, 100);
     } else {
         // aspect < 1, set the width to -1 to 1, with larger height
-        glOrtho(-6.0, 6.0, -6.0 / aspect, 6.0 / aspect, 0.1, 100);
+        glOrtho(-6.0, 6.0, -6.0/aspect, 6.0/aspect, 0.1, 100);
     }
 }
 
@@ -408,15 +592,14 @@ int main(int argc, char** argv) {
     glutInitWindowPosition(50, 50); // Position the window's initial top-left corner
     glutCreateWindow(title);          // Create window with the given title
     srand(time(0));
-    createCube();
-    createCube();
-    createCube();
     glutDisplayFunc(display);       // Register callback handler for window re-paint event
     glutReshapeFunc(reshape);       // Register callback handler for window re-size event
     initGL();                       // Our own OpenGL initialization
-    glutTimerFunc(0, timer, 0);     // First timer call immediately [NEW]
+    //glutTimerFunc(0, timer, 0);     // First timer call immediately [NEW]
+    glutTimerFunc(25, addDeltas, 0);
     glutKeyboardFunc(keyboardPressed);
     glutMouseFunc(mouseClick);
     glutMainLoop();                 // Enter the infinite event-processing loop
     return 0;
 }
+
