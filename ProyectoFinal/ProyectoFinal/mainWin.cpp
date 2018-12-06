@@ -214,7 +214,7 @@ cube newCube(float cR, float cG, float cB, float x, float y, float z, float t, f
 	myCube.dx = 0;
 	myCube.dy = 0;
 	myCube.dz = 0;
-	myCube.dt = 0;
+	myCube.dt = 1;
 	myCube.angle = 0;
 	return myCube;
 }
@@ -249,7 +249,7 @@ ellipsoid newEllipsoid(float cR, float cG, float cB, float x, float y, float z, 
 	myEllipsoid.dx = 0;
 	myEllipsoid.dy = 0;
 	myEllipsoid.dz = 0;
-	myEllipsoid.dt = 0;
+	myEllipsoid.dt = 1;
 	myEllipsoid.angle = 0;
 	return myEllipsoid;
 }
@@ -261,6 +261,7 @@ void drawSphere(float x, float y, float z, float r) {
 }
 
 void drawEllipsoid(float x, float y, float z, float t, float r) {
+	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glTranslatef(x, y, z);
 	glRotatef(t, 1, 0, 0);
@@ -270,6 +271,7 @@ void drawEllipsoid(float x, float y, float z, float t, float r) {
 }
 
 void drawCube(float x, float y, float z, float t, float l) {
+	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glRotatef(t, 0, 1, 0);
 	glTranslatef(x, y, z);
@@ -474,13 +476,13 @@ void movSphere(sphere &s) {
 
 void rotCube(cube &c) {
 
-	c.dt = 0.5;
+	c.dt = c.dt + 5;
 
 }
 
 void rotEllipsoid(ellipsoid &e) {
 
-	e.dt = 0.5;
+	e.dt = e.dt + 5;
 
 }
 
