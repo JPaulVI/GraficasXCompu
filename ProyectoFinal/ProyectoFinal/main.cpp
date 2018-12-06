@@ -27,7 +27,7 @@ int h = 900;
 //limits of scene
 int xmin = -8;
 int xmax = 8;
-int ymin= -5;
+int ymin = -5;
 int ymax = 5;
 int zmin = -20;
 int zmax = 0;
@@ -47,7 +47,7 @@ bool isSphereSpinning = false;
 char fig = 's';
 
 //structures with properties of figures
-struct cube{
+struct cube {
     float colorR;
     float colorG;
     float colorB;
@@ -63,7 +63,7 @@ struct cube{
     float dt;
 };
 
-struct sphere{
+struct sphere {
     float colorR;
     float colorG;
     float colorB;
@@ -77,7 +77,8 @@ struct sphere{
     float dz;
     float dt;
 };
-struct ellipsoid{
+
+struct ellipsoid {
     float colorR;
     float colorG;
     float colorB;
@@ -107,87 +108,90 @@ void setTrans(char fig, double s);
 
 void keyboardPressed(unsigned char key, int x, int y)
 {
-     switch(key) {
-         case 'q':
-             createCube();
-             break;
-         case 's':
-             createSphere();
-             break;
-         case 'a':
-             createEllipsoid();
-             break;
-         case 'c':
-             setColors(fig);
-             break;
-         case 'm':
-             setMov(fig);
-             break;
-         case 'r':
-             setRot(fig);
-             break;
-         case 'e':
-             setScale(fig, levelS);
-             break;
-         case 't':
-             setTrans(fig, levelT);
-             break;
-         case '1':
-             levelS = 0.5;
-             levelT = 0.1;
-             break;
-         case '2':
-             levelS = 0.6;
-             levelT = 0.2;
-             break;
-         case '3':
-             levelS = 0.7;
-             levelT = 0.3;
-             break;
-         case '4':
-             levelS = 0.8;
-             levelT = 0.4;
-             break;
-         case '5':
-             levelS = 0.9;
-             levelT = 0.5;
-             break;
-         case '6':
-             levelS = 1.2;
-             levelT = 0.6;
-             break;
-         case '7':
-             levelS = 1.3;
-             levelT = 0.7;
-             break;
-         case '8':
-             levelS = 1.4;
-             levelT = 0.8;
-             break;
-         case '9':
-             levelS = 1.5;
-             levelT = 0.9;
-             break;
-         case  27:   // ESC
-             exit(0);
-     }
+    switch (key) {
+        case 'q':
+            createCube();
+            break;
+        case 's':
+            createSphere();
+            break;
+        case 'a':
+            createEllipsoid();
+            break;
+        case 'c':
+            setColors(fig);
+            break;
+        case 'm':
+            setMov(fig);
+            break;
+        case 'r':
+            setRot(fig);
+            break;
+        case 'e':
+            setScale(fig, levelS);
+            break;
+        case 't':
+            setTrans(fig, levelT);
+            break;
+        case '1':
+            levelS = 0.5;
+            levelT = 0.1;
+            break;
+        case '2':
+            levelS = 0.6;
+            levelT = 0.2;
+            break;
+        case '3':
+            levelS = 0.7;
+            levelT = 0.3;
+            break;
+        case '4':
+            levelS = 0.8;
+            levelT = 0.4;
+            break;
+        case '5':
+            levelS = 0.9;
+            levelT = 0.5;
+            break;
+        case '6':
+            levelS = 1.2;
+            levelT = 0.6;
+            break;
+        case '7':
+            levelS = 1.3;
+            levelT = 0.7;
+            break;
+        case '8':
+            levelS = 1.4;
+            levelT = 0.8;
+            break;
+        case '9':
+            levelS = 1.5;
+            levelT = 0.9;
+            break;
+        case  27:   // ESC
+            exit(0);
+            break;
+    }
 }
 
 void mouseClick(int button, int state, int x, int y)
 {
-    cout<<button;
-    cout<<state;
-    cout<<"x: "<<x;
-    cout<<"y: "<<y<<endl;
+    cout << button;
+    cout << state;
+    cout << "x: " << x;
+    cout << "y: " << y << endl;
     
-    if(button == 0 && state == 0){
-        if(x<300){
-            if(y<300){
+    if (button == 0 && state == 0) {
+        if (x<300) {
+            if (y<300) {
                 fig = 'e';
-            } else{
-                if(y<620){
+            }
+            else {
+                if (y<620) {
                     fig = 'c';
-                }else{
+                }
+                else {
                     fig = 's';
                 }
             }
@@ -196,7 +200,7 @@ void mouseClick(int button, int state, int x, int y)
     
 }
 
-cube newCube(float cR, float cG, float cB, float x, float y, float z, float t, float l){
+cube newCube(float cR, float cG, float cB, float x, float y, float z, float t, float l) {
     cube myCube;
     myCube.colorR = cR;
     myCube.colorG = cG;
@@ -209,12 +213,12 @@ cube newCube(float cR, float cG, float cB, float x, float y, float z, float t, f
     myCube.dx = 0;
     myCube.dy = 0;
     myCube.dz = 0;
-    myCube.dt = 0;
+    myCube.dt = 1;
     myCube.angle = 0;
     return myCube;
 }
 
-sphere newSphere(float cR, float cG, float cB, float x, float y, float z, float t, float r){
+sphere newSphere(float cR, float cG, float cB, float x, float y, float z, float t, float r) {
     sphere mySphere;
     mySphere.colorR = cR;
     mySphere.colorG = cG;
@@ -231,7 +235,7 @@ sphere newSphere(float cR, float cG, float cB, float x, float y, float z, float 
     return mySphere;
 }
 
-ellipsoid newEllipsoid(float cR, float cG, float cB, float x, float y, float z, float t, float r){
+ellipsoid newEllipsoid(float cR, float cG, float cB, float x, float y, float z, float t, float r) {
     ellipsoid myEllipsoid;
     myEllipsoid.colorR = cR;
     myEllipsoid.colorG = cG;
@@ -244,205 +248,207 @@ ellipsoid newEllipsoid(float cR, float cG, float cB, float x, float y, float z, 
     myEllipsoid.dx = 0;
     myEllipsoid.dy = 0;
     myEllipsoid.dz = 0;
-    myEllipsoid.dt = 0;
+    myEllipsoid.dt = 1;
     myEllipsoid.angle = 0;
     return myEllipsoid;
 }
 
 void drawSphere(float x, float y, float z, float r) {
-    //glRotatef(angleSph, 1.0f, 1.0f, 0.0f);  // Rotate about the (1,1,0)-axis [NEW]
-    //glPushMatrix();
     r = (double)r;
     glTranslatef(x, y, z);
     glutSolidSphere(r, 50, 50);
-    //glPopMatrix();
-    /*angleSph += 0.2f;
-     
-     if(tSph){
-     glTranslatef(1, 0, 0);
-     }
-     if(cSph){
-     
-     }*/
 }
 
 void drawEllipsoid(float x, float y, float z, float t, float r) {
+    glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glTranslatef(x, y, z);
-    glRotatef(t, 0, 1, 0);
+    glRotatef(t, 0, 1, 1);
+    glTranslatef(0, 0, 0);
     glScalef(0.75, 0.35, 0.35);
     glutSolidSphere(r, 50, 50);
     glPopMatrix();
 }
 
 void drawCube(float x, float y, float z, float t, float l) {
+    glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glTranslatef(x, y, z);
-    glRotatef(t, 1, 1, 1);
+    glRotatef(t, 1, 1, 0);
+    glTranslatef(0, 0, 0);
     glutSolidCube(l);
     glPopMatrix();
 }
 
-void createCube(){
+void createCube() {
     int rCR, rCG, rCB, rX, rY, rZ;
-    rCR = rand()%(2);
-    rCG = rand()%(2);
-    rCB = rand()%(2);
-    rX = (rand()%(101)) + (-50);
-    rY = (rand()%(81)) + (-40);
-    rZ = (rand()%(21)) * -1;
+    //rCR = rand() % (2);
+    //rCG = rand() % (2);
+    //rCB = rand() % (2);
+    rCR = (rand() % (51))*.1;
+    rCG = (rand() % (51))*.1;
+    rCB = (rand() % (51))*.1;
+    rX = (rand() % (101)) + (-50);
+    rY = (rand() % (81)) + (-40);
+    rZ = (rand() % (21)) * -1;
     cube c = newCube(rCR, rCG, rCB, rX*0.1, rY*0.1, rZ, 1, 1);
     cubes.push_back(c);
 }
 
-void createSphere(){
+void createSphere() {
     int rCR, rCG, rCB, rX, rY, rZ;
-    rCR = rand()%(2);
-    rCG = rand()%(2);
-    rCB = rand()%(2);
-    rX = (rand()%(101)) + (-50);
-    rY = (rand()%(81)) + (-40);
-    rZ = (rand()%(21)) * -1;
+    //rCR = rand() % (2);
+    //rCG = rand() % (2);
+    //rCB = rand() % (2);
+    rCR = (rand() % (51))*.1;
+    rCG = (rand() % (51))*.1;
+    rCB = (rand() % (51))*.1;
+    rX = (rand() % (101)) + (-50);
+    rY = (rand() % (81)) + (-40);
+    rZ = (rand() % (21)) * -1;
     sphere s = newSphere(rCR, rCG, rCB, rX*0.1, rY*0.1, rZ, 1, 0.5);
     spheres.push_back(s);
 }
 
-void createEllipsoid(){
+void createEllipsoid() {
     int rCR, rCG, rCB, rX, rY, rZ;
-    rCR = rand()%(2);
-    rCG = rand()%(2);
-    rCB = rand()%(2);
-    rX = (rand()%(101)) + (-50);
-    rY = (rand()%(81)) + (-40);
-    rZ = (rand()%(21)) * -1;
+    //rCR = rand() % (2);
+    //rCG = rand() % (2);
+    //rCB = rand() % (2);
+    rCR = (rand() % (51))*.1;
+    rCG = (rand() % (51))*.1;
+    rCB = (rand() % (51))*.1;
+    rX = (rand() % (101)) + (-50);
+    rY = (rand() % (81)) + (-40);
+    rZ = (rand() % (21)) * -1;
     ellipsoid e = newEllipsoid(rCR, rCG, rCB, rX*0.1, rY*0.1, rZ, 1, 1);
     ellipsoids.push_back(e);
 }
 
-void setMov(char fig){
-    if(fig == 'c'){
+void setMov(char fig) {
+    if (fig == 'c') {
         isCubeMoving = !isCubeMoving;
-        for(int i=0;i<cubes.size();i++){
-            cubes[i].dx = rand()%(101)*0.001;
-            cubes[i].dy = rand()%(101)*0.001;
+        for (int i = 0;i<cubes.size();i++) {
+            cubes[i].dx = rand() % (101)*0.001;
+            cubes[i].dy = rand() % (101)*0.001;
             //cubes[i].dy = 0;
             cubes[i].dz = 0;
         }
     }
-    if(fig == 'e'){
+    if (fig == 'e') {
         isEllipsoidMoving = !isEllipsoidMoving;
-        for(int i=0;i<ellipsoids.size();i++){
+        for (int i = 0;i<ellipsoids.size();i++) {
             ellipsoids[i].dx = 0;
-            ellipsoids[i].dy = rand()%(101)*0.001;
-            ellipsoids[i].dz = rand()%(101)*0.001;
+            ellipsoids[i].dy = rand() % (101)*0.001;
+            ellipsoids[i].dz = rand() % (101)*0.001;
             //ellipsoids[i].dz = 0;
         }
     }
-    if(fig == 's'){
+    if (fig == 's') {
         isSphereMoving = !isSphereMoving;
-        for(int i=0;i<spheres.size();i++){
-            spheres[i].dx = rand()%(101)*0.001;
-            spheres[i].dy = rand()%(101)*0.001;
-            spheres[i].dz = rand()%(101)*0.001;
+        for (int i = 0;i<spheres.size();i++) {
+            spheres[i].dx = rand() % (101)*0.001;
+            spheres[i].dy = rand() % (101)*0.001;
+            spheres[i].dz = rand() % (101)*0.001;
         }
     }
     
 }
 
-void setRot(char fig){
+void setRot(char fig) {
     
-    if(fig == 'c'){
+    if (fig == 'c') {
         isCubeSpinning = !isCubeSpinning;
     }
-    if(fig == 'e'){
+    if (fig == 'e') {
         isEllipsoidSpinnig = !isEllipsoidSpinnig;
     }
     
 }
 
-void setColors(char fig){
-    if(fig == 'c'){
-        for(int i=0;i<cubes.size();i++){
-            cubes[i].colorR = rand()%(2);
-            cubes[i].colorG = rand()%(2);
-            cubes[i].colorB = rand()%(2);
+void setColors(char fig) {
+    if (fig == 'c') {
+        for (int i = 0;i<cubes.size();i++) {
+            cubes[i].colorR = rand() % (2);
+            cubes[i].colorG = rand() % (2);
+            cubes[i].colorB = rand() % (2);
         }
     }
-    if(fig == 'e'){
-        for(int i=0;i<ellipsoids.size();i++){
-            ellipsoids[i].colorR = rand()%(2);
-            ellipsoids[i].colorG = rand()%(2);
-            ellipsoids[i].colorB = rand()%(2);
+    if (fig == 'e') {
+        for (int i = 0;i<ellipsoids.size();i++) {
+            ellipsoids[i].colorR = rand() % (2);
+            ellipsoids[i].colorG = rand() % (2);
+            ellipsoids[i].colorB = rand() % (2);
         }
     }
-    if(fig == 's'){
-        for(int i=0;i<spheres.size();i++){
-            spheres[i].colorR = rand()%(2);
-            spheres[i].colorG = rand()%(2);
-            spheres[i].colorB = rand()%(2);
+    if (fig == 's') {
+        for (int i = 0;i<spheres.size();i++) {
+            spheres[i].colorR = rand() % (2);
+            spheres[i].colorG = rand() % (2);
+            spheres[i].colorB = rand() % (2);
         }
     }
 }
 
-void setScale(char fig, double s){
-    if(fig == 'c'){
-        for(int i=0;i<cubes.size();i++){
+void setScale(char fig, double s) {
+    if (fig == 'c') {
+        for (int i = 0;i<cubes.size();i++) {
             cubes[i].large = cubes[i].large*s;
         }
     }
-    if(fig == 'e'){
-        for(int i=0;i<ellipsoids.size();i++){
+    if (fig == 'e') {
+        for (int i = 0;i<ellipsoids.size();i++) {
             ellipsoids[i].radio = ellipsoids[i].radio*s;
         }
     }
-    if(fig == 's'){
+    if (fig == 's') {
         isSphereMoving = !isSphereMoving;
-        for(int i=0;i<spheres.size();i++){
+        for (int i = 0;i<spheres.size();i++) {
             spheres[i].radio = spheres[i].radio*s;
         }
     }
 }
 
-void setTrans(char fig, double s){
-    if(fig == 'c'){
-        for(int i=0;i<cubes.size();i++){
+void setTrans(char fig, double s) {
+    if (fig == 'c') {
+        for (int i = 0;i<cubes.size();i++) {
             cubes[i].trans = s;
         }
     }
-    if(fig == 'e'){
-        for(int i=0;i<ellipsoids.size();i++){
+    if (fig == 'e') {
+        for (int i = 0;i<ellipsoids.size();i++) {
             ellipsoids[i].trans = s;
         }
     }
-    if(fig == 's'){
+    if (fig == 's') {
         isSphereMoving = !isSphereMoving;
-        for(int i=0;i<spheres.size();i++){
+        for (int i = 0;i<spheres.size();i++) {
             spheres[i].trans = s;
         }
     }
 }
 
-void movCube(cube &c){
+void movCube(cube &c) {
     
-    if(c.positionX<xmin || c.positionX>xmax){
+    if (c.positionX<xmin || c.positionX>xmax) {
         c.dx = (-c.dx);
     }
     
-    if(c.positionY<ymin || c.positionY>ymax){
+    if (c.positionY<ymin || c.positionY>ymax) {
         c.dy = -c.dy;
     }
     
     c.positionX = c.positionX + c.dx;
-    c.positionY = c.positionY +c.dy;
+    c.positionY = c.positionY + c.dy;
 }
 
-void movEllipsoid(ellipsoid &e){
+void movEllipsoid(ellipsoid &e) {
     
-    if(e.positionY<ymin || e.positionY>ymax){
+    if (e.positionY<ymin || e.positionY>ymax) {
         e.dy = -e.dy;
     }
     
-    if(e.positionZ<zmin || e.positionZ>zmax){
+    if (e.positionZ<zmin || e.positionZ>zmax) {
         e.dz = -e.dz;
     }
     
@@ -450,17 +456,17 @@ void movEllipsoid(ellipsoid &e){
     e.positionZ = e.positionZ + e.dz;
 }
 
-void movSphere(sphere &s){
+void movSphere(sphere &s) {
     
-    if(s.positionX<xmin || s.positionX>xmax){
+    if (s.positionX<xmin || s.positionX>xmax) {
         s.dx = -s.dx;
     }
     
-    if(s.positionY<ymin || s.positionY>ymax){
+    if (s.positionY<ymin || s.positionY>ymax) {
         s.dy = -s.dy;
     }
     
-    if(s.positionZ<zmin || s.positionZ>zmax){
+    if (s.positionZ<zmin || s.positionZ>zmax) {
         s.dz = -s.dz;
     }
     
@@ -469,46 +475,46 @@ void movSphere(sphere &s){
     s.positionZ = s.positionZ + s.dz;
 }
 
-void rotCube(cube &c){
+void rotCube(cube &c) {
     
-    c.dt = rand()%(101)*0.001;
-    
-}
-
-void rotEllipsoid(ellipsoid &e){
-    
-    e.dt = rand()%(101)*0.001;
+    c.dt = c.dt + rand() % (101)*0.1;
     
 }
 
-void addDeltas(int x){
+void rotEllipsoid(ellipsoid &e) {
     
-    if(isCubeMoving){
-        for(int i=0; i<cubes.size(); i++){
+    e.dt = e.dt + rand() % (101)*0.1;
+    
+}
+
+void addDeltas(int x) {
+    
+    if (isCubeMoving) {
+        for (int i = 0; i<cubes.size(); i++) {
             movCube(cubes[i]);
         }
     }
     
-    if(isCubeSpinning){
-        for(int i=0; i<cubes.size(); i++){
+    if (isCubeSpinning) {
+        for (int i = 0; i<cubes.size(); i++) {
             rotCube(cubes[i]);
         }
     }
     
-    if(isEllipsoidMoving){
-        for(int i=0; i<ellipsoids.size(); i++){
+    if (isEllipsoidMoving) {
+        for (int i = 0; i<ellipsoids.size(); i++) {
             movEllipsoid(ellipsoids[i]);
         }
     }
     
-    if(isEllipsoidSpinnig){
-        for(int i=0; i<ellipsoids.size(); i++){
+    if (isEllipsoidSpinnig) {
+        for (int i = 0; i<ellipsoids.size(); i++) {
             rotEllipsoid(ellipsoids[i]);
         }
     }
     
-    if(isSphereMoving){
-        for(int i=0; i<spheres.size(); i++){
+    if (isSphereMoving) {
+        for (int i = 0; i<spheres.size(); i++) {
             movSphere(spheres[i]);
         }
     }
@@ -519,51 +525,27 @@ void addDeltas(int x){
 
 /* Initialize OpenGL Graphics */
 void initGL() {
+    
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glClearColor(1.0f, 1.0f, 1.0f, 0.0f); // Set background color to black and opaque
     glClearDepth(1.0f);                   // Set background depth to farthest
     glEnable(GL_DEPTH_TEST);   // Enable depth testing for z-culling
+    
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
-    //glEnable(GL_LIGHT1);
-    glDepthFunc(GL_LESS);    // Set the type of depth-test
-    glShadeModel(GL_SMOOTH);   // Enable smooth shading
-    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);  // Nice perspective corrections
-    
-    glEnable(GL_SPOT_DIRECTION);
-    glEnable(GL_AMBIENT);
-    glEnable(GL_POSITION);
-    glEnable(GL_DIFFUSE);
-    
-    GLfloat dirVector [ ] = {1.0, 1.0, 1.0};
-    //GLfloat dirVector1 [ ] = {1.0, 1.0, 1.0};
-    GLfloat light0PosType [ ] = {0.0, 0.0, -10.0, 0.0};
-    //GLfloat light1PosType [ ] = {6.0, 5.0, 0.0, 0.0};
-    GLfloat whiteColor [ ] = {0.0, 0.0, 0.0, 1.0};
-    
-    //glLightfv(GL_LIGHT1, GL_POSITION, light1PosType);
-    //glLightfv(GL_LIGHT1, GL_AMBIENT, whiteColor);
-    //glLightfv (GL_LIGHT1, GL_SPOT_DIRECTION, dirVector);
-    //glLightfv(GL_LIGHT1, GL_SPECULAR, whiteColor);
-    
-    //glLightfv (GL_LIGHT0, GL_SPOT_DIRECTION, dirVector1);
-    glLightfv(GL_LIGHT0, GL_POSITION, light0PosType);
-    glLightfv(GL_LIGHT0, GL_AMBIENT, whiteColor);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, whiteColor);
-    glLightfv(GL_LIGHT0, GL_SPECULAR, whiteColor);
-
+    glEnable(GL_LIGHT1);
     
     glEnable(GL_COLOR_MATERIAL);
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 }
 //code extracted from programming-techniques.com and adapted to our work
 //https://www.programming-techniques.com/2012/05/font-rendering-in-glut-using-bitmap.html
-void renderBitmapString(float x, float y,const char *string){
+void renderBitmapString(float x, float y, const char *string) {
     const char *c;
     glRasterPos2f(x, y);
-    for (c=string; *c != '\0'; c++) {
-        glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, *c);
+    for (c = string; *c != '\0'; c++) {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
     }
 }
 
@@ -571,7 +553,7 @@ void setOrthographicProjection() {
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
-    gluOrtho2D(300, w, w-150, 0);
+    gluOrtho2D(300, w, w - 150, 0);
     glScalef(1, -1, 1);
     glTranslatef(0, -h, 0);
     glMatrixMode(GL_MODELVIEW);
@@ -599,6 +581,20 @@ void display() {
     glMatrixMode(GL_MODELVIEW);  // To operate on the Projection matrix
     glLoadIdentity();
     
+    GLfloat ambientColor[] = { 0.2, 0.2, 0.2, 1.0 };
+    GLfloat Color0[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+    GLfloat Position0[] = { 0.0f, 10.0f, 0.0f, 1.0f };
+    GLfloat Color1[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+    GLfloat Position1[] = { 0.0f, 10.0f, 0.0f, 0.0f  };
+    
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientColor);
+    
+    glLightfv(GL_LIGHT0, GL_SPECULAR, Color0);
+    glLightfv(GL_LIGHT0, GL_POSITION, Position0);
+    
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, Color1);
+    glLightfv(GL_LIGHT1, GL_POSITION, Position1);
+    
     //viewport menu figures
     glViewport(0, 0, 300, h);
     GLfloat aspect = (GLfloat)300 / (GLfloat)(h);
@@ -608,7 +604,6 @@ void display() {
     
     //menu static figures
     glColor3f(1.0f, 0.0f, 0.0f);
-    //glRotatef(0.5f, 0.0f, 1.f, 0.0f);
     drawEllipsoid(0.0f, 2.5f, -6.0f, 0, 1);
     glColor3f(0.0f, 1.0f, 0.0f);
     drawCube(0.0f, 0.0f, -6.0f, 0, 1);
@@ -616,8 +611,8 @@ void display() {
     drawSphere(0.0f, -2.5f, -6.0f, 0.5);
     
     //Viewport stripes scene
-    glViewport(300, 150, w-300, h-150);
-    GLfloat aspect1 = (GLfloat)(w-300) / (GLfloat)(h-150);
+    glViewport(300, 150, w - 300, h - 150);
+    GLfloat aspect1 = (GLfloat)(w - 300) / (GLfloat)(h - 150);
     
     glMatrixMode(GL_PROJECTION);  // To operate on the Projection matrix
     glLoadIdentity();             // Reset
@@ -629,7 +624,7 @@ void display() {
     for (int i = 0; i<cubes.size(); i++) {
         glColor4f(cubes[i].colorR, cubes[i].colorG, cubes[i].colorB, cubes[i].trans);
         glPushMatrix();
-        drawCube(cubes[i].positionX, cubes[i].positionY, cubes[i].positionZ, cubes[i].angle, cubes[i].large);
+        drawCube(cubes[i].positionX, cubes[i].positionY, cubes[i].positionZ, cubes[i].dt, cubes[i].large);
         glPopMatrix();
     }
     
@@ -641,48 +636,45 @@ void display() {
     }
     
     for (int i = 0; i<ellipsoids.size(); i++) {
-        glColor4f(ellipsoids[i].colorR, ellipsoids[i].colorG, ellipsoids[i].colorB,ellipsoids[i].trans);
+        glColor4f(ellipsoids[i].colorR, ellipsoids[i].colorG, ellipsoids[i].colorB, ellipsoids[i].trans);
         glPushMatrix();
-        drawEllipsoid(ellipsoids[i].positionX, ellipsoids[i].positionY, ellipsoids[i].positionZ, ellipsoids[i].angle, ellipsoids[i].radio);
+        drawEllipsoid(ellipsoids[i].positionX, ellipsoids[i].positionY, ellipsoids[i].positionZ, ellipsoids[i].dt, ellipsoids[i].radio);
         glPopMatrix();
     }
     
     
     //The black stripes are at z = -50
     glColor3f(0.0f, 0.0f, 0.0f);
-    for (i = -9.0f; i < 9; i = i+0.5) {
+    for (i = -9.0f; i < 9; i = i + 0.5) {
         glBegin(GL_QUADS);
-        glVertex3f(i+0.25f, -6.0f, -10.0f);
+        glVertex3f(i + 0.25f, -6.0f, -10.0f);
         glVertex3f(i, -6.0f, -10.0f);
         glVertex3f(i, 6.0f, -10.0f);
-        glVertex3f(i+0.25f,  6.0f, -10.0f);
+        glVertex3f(i + 0.25f, 6.0f, -10.0f);
         glEnd();
     }
     
     //Viewport command menu
-    glViewport(300, 0, w-300, 150);
-    GLfloat aspect2 = (GLfloat)(w-300) / (GLfloat)(150);
+    glViewport(300, 0, w - 300, 150);
+    GLfloat aspect2 = (GLfloat)(w - 300) / (GLfloat)(150);
     glMatrixMode(GL_PROJECTION);  // To operate on the Projection matrix
     glLoadIdentity();             // Reset
     glOrtho(-8.0, 8.0, -8.0 / aspect2, 8.0 / aspect2, 0.1, 100);
     
     //menu commands text
-    char e[] = "e - Escalar (se necesita un nivel de escalado)";
-    char m[] = "m - Mover figura";
-    char c[] = "c - Cambiar de color de figura";
-    char r[] = "r - Rotar figura";
-    char t[] = "t - Cambia transparencia (se necesita indicar nivel de transparencia)";
-    char esc[] = "ESC - Salir del programa";
-    glColor3d(1.0, 0.0, 0.0);
     setOrthographicProjection();
     glPushMatrix();
     glLoadIdentity();
-    renderBitmapString(350, 500,"e - Escalar (se necesita un nivel de escalado)");
-    renderBitmapString(350, 300,"m - Mover figura");
-    renderBitmapString(350, 100,"c - Cambiar de color de figura");
-    renderBitmapString(800, 500,"r - Rotar figura");
-    renderBitmapString(800, 300,"t - Cambia transparencia (se necesita un nivel de transparencia)");
-    renderBitmapString(800, 100,"ESC - Salir del programa");
+    renderBitmapString(350, 700, "e - Escalar (se necesita un nivel de escalado)");
+    renderBitmapString(350, 550, "c - Cambiar de color de figura");
+    renderBitmapString(350, 400, "q - Agregar elipsoide");
+    renderBitmapString(350, 250, "a - Agregar cubo");
+    renderBitmapString(350, 100, "z - Agregar esfera");
+    renderBitmapString(800, 700, "m - Mover figura");
+    renderBitmapString(800, 550, "r - Rotar figura");
+    renderBitmapString(800, 400, "t - Cambia transparencia (se necesita un nivel de transparencia)");
+    renderBitmapString(800, 250, "ESC - Salir del programa");
+    
     glPopMatrix();
     resetPerspectiveProjection();
     glutSwapBuffers();  // Swap the front and back frame buffers (double buffering)
@@ -709,10 +701,11 @@ void reshape(GLsizei width, GLsizei height) {  // GLsizei for non-negative integ
     // Set up orthographic projection view [NEW]
     if (width >= height) {
         // aspect >= 1, set the height from -1 to 1, with larger width
-        glOrtho(-3.0 *aspect,3.0*aspect, -3.0, 3.0, 0.1, 100);
-    } else {
+        glOrtho(-3.0 *aspect, 3.0*aspect, -3.0, 3.0, 0.1, 100);
+    }
+    else {
         // aspect < 1, set the width to -1 to 1, with larger height
-        glOrtho(-6.0, 6.0, -6.0/aspect, 6.0/aspect, 0.1, 100);
+        glOrtho(-6.0, 6.0, -6.0 / aspect, 6.0 / aspect, 0.1, 100);
     }
 }
 
@@ -733,4 +726,3 @@ int main(int argc, char** argv) {
     glutMainLoop();                     // Enter the infinite event-processing loop
     return 0;
 }
-
